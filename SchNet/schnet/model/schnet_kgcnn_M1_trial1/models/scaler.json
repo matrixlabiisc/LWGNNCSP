@@ -1,0 +1,1 @@
+{"class_name": "StandardLabelScaler", "module_name": "kgcnn.data.transform.scaler.standard", "config": {"copy": true, "with_mean": true, "with_std": true, "y": "graph_labels"}, "weights": {"n_features_in_": 1, "mean_": [-1.4110743313017895], "scale_": [1.1620867264486194], "var_": [1.3504455597880687], "n_samples_seen_": 92642}}

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[56]:
-
-
 import numpy as np
 import pandas as pd
 from pymatgen.core import Structure
@@ -16,15 +13,14 @@ from pymatgen.analysis.structure_matcher import ElementComparator
 from pymatgen.ext.matproj import MPRester
 import shutil
 import argparse
+from dotenv import load_dotenv 
 
-# In[121]:
 compounds = ['LiF', 'NaF', 'KF', 'RbF', 'CsF', 'LiCl', 'NaCl', 'KCl', 'RbCl', 'CsCl',
             'BeO', 'MgO', 'CaO', 'SrO', 'BaO', 'ZnO', 'CdO', 'BeS', 'MgS', 'CaS', 'SrS',
             'BaS', 'ZnS', 'CdS', 'C', 'Si', 'GaAs', 'CdTe', 'CsPbI3',  'BN', 'GaN', 'ZrC',
             'SiC', 'WC', 'MnO', 'GaP', 'AlP', 'InP', 'LiBr', 'NaBr', 'KBr', 'RbBr', 'BeSe',
             'MgSe', 'CaSe', 'SrSe', 'BaSe']
 
-#compounds = ['MgS']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--pdir', type = str)
@@ -44,13 +40,15 @@ compounds_correctly_predicted = []
 form_e_error_list = []
 mape_lattice_list = []
 
+load_dotenv()
+MP_API_KEY = os.getenv('MP_API_KEY')
+
 for compound in compounds:
     path_to_crystal = '../results/{}'.format(compound)
     optimizer = 'tpe'
     pretty_formula = compound
     path_to_data = os.path.join(path_to_crystal, optimizer)
 
-    MP_API_KEY = 'edSrcmMEuWF0k1Qi'
     properties = [unitcell_type, "formation_energy_per_atom"]
     criteria = {"formation_energy_per_atom": {"$exists": True}, "pretty_formula": pretty_formula}
 
@@ -88,7 +86,7 @@ for compound in compounds:
             lattice_true = np.array([true.as_dict()['lattice']['a'], true.as_dict()['lattice']['b'],
                                     true.as_dict()['lattice']['c']])
             mape_lattice = np.mean((np.abs(lattice_true - lattice_pred) / lattice_true) * 100)
-            if mape_lattice < 25:
+            if mape_lattice < 20:
                 final_matching[directory.split('_')[0]] = [True, form_e_error, mape_lattice]
                 compounds_correctly_predicted.append(directory.split('_')[0])
                 form_e_error_list.append(form_e_error)
@@ -96,37 +94,8 @@ for compound in compounds:
             break
 
 
-# In[127]:
-
-
 print(final_matching)
 print('\n')
 print('Number of correctly predicted structures : {}'.format(len(compounds_correctly_predicted)))
 print('MAE in formation energy for correctly predicted structures : {} meV/atom'.format(round(np.mean(form_e_error_list)*1000, 3)))
 print('MAPE in predicted lattice length for correctly predicted structures : {}%'.format(round(np.mean(mape_lattice_list), 3)))
-
-# In[128]:
-
-
-#Structure.from_str(ground_truth[i]['cifs.conventional_standard'], fmt = 'cif').as_dict()['lattice']['a']
-
-
-# In[129]:
-
-
-#mean_form_error = np.mean([final_matching[x][1] for x in final_matching])
-#mean_lattice_percent_error = np.mean([final_matching[x][2] for x in final_matching])
-
-
-# In[130]:
-
-
-#print('Mean Absolute Error in Prediction of Formation Energy is {} eV/atom'.format(round(mean_form_error, 4)))
-#print('Mean Absolute Percentage Error in Prediction of Lattice Constant is {}%'.format(round(mean_lattice_percent_error, 3)))
-
-
-# In[ ]:
-
-
-
-

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[56]:
-
-
 import numpy as np
 import pandas as pd
 from pymatgen.core import Structure
@@ -17,7 +14,6 @@ from pymatgen.ext.matproj import MPRester
 import shutil
 import argparse
 
-# In[121]:
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--compound', type = str)
@@ -29,8 +25,6 @@ optimizer = 'tpe'
 pretty_formula = args.compound
 path_to_data = os.path.join(path_to_crystal, optimizer)
 
-
-# In[122]:
 
 if args.celltype == 'primitive':
     unitcell_type = "cifs.primitive"
@@ -45,26 +39,10 @@ with MPRester(MP_API_KEY) as mpr:
     ground_truth = mpr.query(criteria, properties)
 
 print(len(ground_truth))
-# In[123]:
-
-
-#Structure.from_str(ground_truth[0]['cifs.conventional_standard'], fmt = 'cif')
-
-
-# In[124]:
-
 
 all_directories = sorted(os.listdir(path_to_data))
 
-
-# In[125]:
-
-
 final_matching = {}
-
-
-# In[126]:
-
 
 for directory in all_directories:
     path_to_curr_dir = os.path.join(path_to_data, directory)
@@ -94,35 +72,7 @@ for directory in all_directories:
             final_matching[directory] = [True, form_e_error, mape_lattice]
             break
 
-
-# In[127]:
-
-
 print(final_matching)
-
-
-# In[128]:
-
-
-#Structure.from_str(ground_truth[i]['cifs.conventional_standard'], fmt = 'cif').as_dict()['lattice']['a']
-
-
-# In[129]:
-
-
-#mean_form_error = np.mean([final_matching[x][1] for x in final_matching])
-#mean_lattice_percent_error = np.mean([final_matching[x][2] for x in final_matching])
-
-
-# In[130]:
-
-
-#print('Mean Absolute Error in Prediction of Formation Energy is {} eV/atom'.format(round(mean_form_error, 4)))
-#print('Mean Absolute Percentage Error in Prediction of Lattice Constant is {}%'.format(round(mean_lattice_percent_error, 3)))
-
-
-# In[ ]:
-
 
 
 
